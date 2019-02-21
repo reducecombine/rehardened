@@ -11,6 +11,7 @@ PRs with further advice are absolutely welcome!
 ### Use an external library which defines your refresh/reset functions:
 
 * https://github.com/stuartsierra/component.repl
+  * Or https://github.com/weavejester/reloaded.repl for supporting [suspendable](https://github.com/weavejester/suspendable)
 * https://github.com/weavejester/integrant-repl
 
 A very important point of those is that they are outside of your source-paths/refresh-paths, so they don't ever get unloaded.
