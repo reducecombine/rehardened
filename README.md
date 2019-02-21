@@ -36,7 +36,7 @@ Normally your IDE can be assigned a keyboard shortcut to a custom reload command
 It's tempting to simplify things and just always `reset`. But it's useful to also `refresh`, since it's vastly faster and sufficient for developing code and running tests.
   * I use Command+Option+Enter for `refresh`, Control+Enter for `reset`.
 
-### Avoid stateful or side-efectful namespaces to the extreme
+### Avoid stateful or side-effectful namespaces to the extreme
 
 If you are familiar with Reloaded, probably you already avoid side-effectful namespaces:
 
@@ -105,3 +105,5 @@ The following are battle-hardened snippets that you can bind to your IDE. I know
 ```
 
 Note that these assume Component, and a `["src" "test"]` source path structure.
+
+Alternatively to the "IDE snippets" approach, you can bundle code like this in your own library, similarly to the libraries mentioned in the first section. Personally I don't because I don't need it - it's more agile to have a snippet that I can continuously refine without releasing .jars, etc.
