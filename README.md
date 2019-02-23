@@ -2,7 +2,8 @@
 
 This repo aims to contain useful snippets and advice for never having to restart a JVM again.
 
-It requires quite some head scratching to make the Reloaded workflow avoid a variety of pitfalls. I've observed that Clojure programmers keep encountering these, so I decided to share some knowledge in this repo.
+It requires quite some head scratching to make the Reloaded workflow avoid a variety of pitfalls.
+I've observed that Clojure programmers keep encountering these, so I decided to share some knowledge in this repo.
 
 PRs with further advice are absolutely welcome!
 
@@ -22,7 +23,9 @@ At least not in your source-paths/refresh-paths; author instead a library simila
 
 ### Use a reset/reload snippet that requires zero context or state (loaded code, current ns, etc)
 
-Normally your IDE can be assigned a keyboard shortcut to a custom reload command. Don't bind `(reset)` to that shortcut, since it depends on the `user` ns to be loaded. Something like `(com.stuartsierra.component.repl/reset)` needs less context. 
+Normally your IDE can be assigned a keyboard shortcut to a custom reload command.
+Don't bind `(reset)` to that shortcut, since it depends on the `user` ns to be loaded.
+Something like `(com.stuartsierra.component.repl/reset)` needs less context. 
 
 ### Catch errors
 
@@ -33,7 +36,8 @@ Normally your IDE can be assigned a keyboard shortcut to a custom reload command
 
 ### Distinguish between refresh and reset
 
-It's tempting to simplify things and just always `reset`. But it's useful to also `refresh`, since it's vastly faster and sufficient for developing code and running tests.
+It's tempting to simplify things and just always `reset`. But it's useful to also `refresh`,
+since it's vastly faster and sufficient for developing code and running tests.
   * I use Command+Option+Enter for `refresh`, Control+Enter for `reset`.
 
 ### Avoid stateful or side-effectful namespaces to the extreme
@@ -55,11 +59,34 @@ Launch all of those in your Component `start` method. Similarly, undo all state 
 
 It's also worth looking into metadata-based protocol extension, for both defrecords, and plain maps.
 
-In particular, plain maps instead of `defrecord`s are drastically less likely to have code loading issues: classes are not guaranteed to be garbage-collected, while objects are.
+In particular, plain maps instead of `defrecord`s are drastically less likely to have code loading issues:
+classes are not guaranteed to be garbage-collected, while objects are.
+
+### Have a dedicated Lein profile
+
+At least for Leiningen users, it is possible to define a global profile in `~/.lein/profiles` with the requires necessary for your Reloaded workflow:
+
+```clojure
+:reloaded {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha4"]
+                          [com.stuartsierra/component.repl "0.2.0"]]}
+```
+
+That way, you can `lein with-profile +reloaded repl` and enjoy Reloaded in any project. Advantages:
+
+* DRY setup
+* Reloaded setup becomes unobstrusive; collaborators may not want it
+* You can use the profile in any project (e.g. a random git clone), not just projects of yours.
+
+Note that typically you can use the profile in your IDE as well.
+
+Just as a caveat, your IDE snippet must include the `require`, and particularly `resolve` business which you'll notice in the final section.
+
+Otherwise you'd need a `dev/user.clj` with those requires, which is not guaranteed to exist in a given project. 
 
 ### Don't refresh-on-save
 
-Having some setup for issuing a `refresh` on every save (Command+S) is generally a recipe for disaster. I recommend instead that you create a composite command in your editor that intentfully saves + refreshes.
+Having some setup for issuing a `refresh` on every save (Command+S) is generally a recipe for disaster.
+I recommend instead that you create a composite command in your editor that intentfully saves + refreshes.
 
 In my case, I hit:
 
@@ -70,14 +97,14 @@ That way, I can keep the distinction while still needing few keystrokes.
 
 ## Snippets
 
-The following are battle-hardened snippets that you can bind to your IDE. I know they look kind of funny but there's a reason for every aspect you can see.
+The following are battle-hardened snippets that you can bind to your IDE.
+I know they look kind of funny but there's a reason for every aspect you can see.
 
 #### Refresh
 
 ```clojure
 (clojure.core/when-let [v (do
                             (clojure.core/require 'clojure.tools.namespace.repl)
-                            (clojure.core/require 'com.stuartsierra.component.repl)
                             ((clojure.core/resolve 'clojure.tools.namespace.repl/set-refresh-dirs) "src" "test")
                             ((clojure.core/resolve 'clojure.tools.namespace.repl/refresh)))]
   (clojure.core/when (clojure.core/instance? java.lang.Throwable v)
@@ -85,6 +112,9 @@ The following are battle-hardened snippets that you can bind to your IDE. I know
       ((clojure.core/resolve 'clojure.tools.namespace.repl/clear)))
     (throw v)))
 ```
+
+* A `["src" "test"]` source path structure is assumed, which you can tweak
+* Otherwise the snippet is agnostic to Component vs. Integrant
 
 #### Reset
 
@@ -106,4 +136,13 @@ The following are battle-hardened snippets that you can bind to your IDE. I know
 
 Note that these assume Component, and a `["src" "test"]` source path structure.
 
-Alternatively to the "IDE snippets" approach, you can bundle code like this in your own library, similarly to the libraries mentioned in the first section. Personally I don't because I don't need it - it's more agile to have a snippet that I can continuously refine without releasing .jars, etc.
+* A `["src" "test"]` source path structure is assumed, which you can tweak
+* Note there's a Component `require` and `stop` aspect. If using Integrant, you'll want to replace those.
+
+---
+
+Alternatively to the "IDE snippets" approach, you can bundle code like that in your own library,
+similarly to the libraries mentioned in the first section.
+
+Personally I don't because I don't need it -
+it's more agile to have a snippet that I can continuously refine without releasing .jars, etc.
