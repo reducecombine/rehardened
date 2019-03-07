@@ -134,8 +134,6 @@ I know they look kind of funny but there's a reason for every aspect you can see
       (throw v))))
 ```
 
-Note that these assume Component, and a `["src" "test"]` source path structure.
-
 * A `["src" "test"]` source path structure is assumed, which you can tweak
 * Note there's a Component `require` and `stop` aspect. If using Integrant, you'll want to replace those.
 
