@@ -21,6 +21,8 @@ A very important point of those is that they are outside of your source-paths/re
 
 At least not in your source-paths/refresh-paths; author instead a library similar to the ones mentioned above.
 
+Else, those functions could get lost after a bad refresh, and you wouldn't be able to automatically recover from that situation.
+
 ### Use a reset/reload snippet that requires zero context or state (loaded code, current ns, etc)
 
 Normally your IDE can be assigned a keyboard shortcut to a custom reload command.
